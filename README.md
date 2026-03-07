@@ -1,16 +1,21 @@
-# TODO
+README
+======
 
+# TODO
 
 - [ ] Implement parsing for:
     - [ ] txt
     - [ ] word -- with [godocx](https://github.com/gomutex/godocx)
     - [ ] excel -- with [excelize](https://github.com/qax-os/excelize)
     - [ ] pdf -- with [pdfcpu](https://github.com/pdfcpu/pdfcpu)
-    - [ ] image (to index EXIF's `geopoint` at some point), for geo-targetted searches
+    - [ ] image (to index EXIF's `geopoint` at some point), for geo-targetted searches -- with [go-exiftool](https://github.com/barasher/go-exiftool)
 - [ ] Implement crawling of:
     - [ ] dropbox files
     - [ ] google drive files
     - [ ] notion documents
+    - [ ] (nicetohave) todoist
+    - [ ] (nicetohave) google calendar
+    - [ ] (nicetohave) gmail
 - [ ] Implement an indexer that:
     - [ ] maps all the data sources (dropbox, notion, etc)
     - [ ] finds out the file type
@@ -45,6 +50,18 @@ rclone sync remote: /home/julien/GoogleDrive --progress --exclude "/Eglise/**"
 # Indexing
 
 [bleve](https://github.com/blevesearch/bleve)
+
+## id for the index
+
+`<source>-<path>`
+
+where `source` is a slug of the source, such as:
+
+- `db` for dropbox
+- `gd` for google drive
+- `nt` for notion
+
+and where `path` is either an URL or a (relative) file path to the resource.
 
 # Searching
 

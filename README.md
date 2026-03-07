@@ -4,7 +4,7 @@ README
 # TODO
 
 - [ ] Implement parsing for:
-    - [ ] txt
+    - [x] txt
     - [ ] word -- with [godocx](https://github.com/gomutex/godocx)
     - [ ] excel -- with [excelize](https://github.com/qax-os/excelize)
     - [ ] pdf -- with [pdfcpu](https://github.com/pdfcpu/pdfcpu)

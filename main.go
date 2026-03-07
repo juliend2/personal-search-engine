@@ -8,8 +8,13 @@ import (
 
 	"desrosiers.org/pse/crawler"
 
-	// "github.com/blevesearch/bleve"
+	"github.com/blevesearch/bleve"
 )
+
+type CrawledDocument struct {
+	ID string
+	Content string
+}
 
 func isBinary(path string) (bool, error) {
 	f, err := os.Open(path)
@@ -25,6 +30,14 @@ func isBinary(path string) (bool, error) {
 	return !strings.HasPrefix(contentType, "text/"), nil
 }
 
+func getTextContent(filePath string) string {
+	bytes, err := os.ReadFile(filePath)
+	if err != nil {
+		fmt.Printf("Error reading the file: '%s'", filePath)
+		return ""
+	}
+	return string(bytes)
+}
 
 func main() {
 
@@ -35,59 +48,50 @@ func main() {
 		panic(err)
 	}
 
-	for _, path := range fs_crawler.Files {
-		b, _ := isBinary(path)
-		fmt.Printf("%v", b)
-		fmt.Println(path)
+	// open a new index
+	index, err := bleve.Open("example.bleve")
+	if err == bleve.ErrorIndexPathDoesNotExist {
+			mapping := bleve.NewIndexMapping()
+			index, err = bleve.New("example.bleve", mapping)
+			if err != nil {
+					panic(err)
+			}
 	}
 
-	// open a new index
-	// index, err := bleve.Open("example.bleve")
-	// if err == bleve.ErrorIndexPathDoesNotExist {
-	// 		mapping := bleve.NewIndexMapping()
-	// 		index, err = bleve.New("example.bleve", mapping)
-	// 		if err != nil {
-	// 				panic(err)
-	// 		}
-	// }
-	//
-	// // index, err := bleve.New("example.bleve", mapping)
-	// if err != nil {
-	// 	fmt.Println(err)
-	// 	return
-	// }
-	//
-	// data := struct {
-	// 	Name string
-	// }{
-	// 	Name: "text",
-	// }
-	//
-	// // index some data
-	// index.Index("id", data)
-	//
-	// data1 := struct {
-	// 	Name string
-	// }{
-	// 	Name: "julien",
-	// }
-	//
-	// // index some data
-	// index.Index("dowit", data1)
-	//
-	// count, _ := index.DocCount()
-	// fmt.Println(count)
-	//
-	//
-	//
-	// // search for some text
-	// query := bleve.NewMatchQuery("julien")
-	// search := bleve.NewSearchRequest(query)
-	// searchResults, err := index.Search(search)
-	// if err != nil {
-	// 	fmt.Println(err)
-	// 	return
-	// }
-	// fmt.Println(searchResults)
+	// index, err := bleve.New("example.bleve", mapping)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	for _, path := range fs_crawler.Files {
+		binary, _ := isBinary(path)
+		// fmt.Printf("%v", binary)
+
+		if binary {
+			fmt.Println("binary format not handled yet...")
+		}
+		// fmt.Println(path)
+		// fmt.Println(getTextContent(path))
+		datum := &CrawledDocument{
+			ID: path,
+			Content: getTextContent(path),
+		}
+
+		index.Index(datum.ID, datum.Content)
+	}
+
+	count, _ := index.DocCount()
+	fmt.Println(count)
+
+	// search for some text
+	query := bleve.NewMatchQuery("français")
+	search := bleve.NewSearchRequest(query)
+	searchResults, err := index.Search(search)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(searchResults)
 }
 

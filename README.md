@@ -3,9 +3,10 @@
 
 - [ ] Implement parsing for:
     - [ ] txt
-    - [ ] word (docx)
-    - [ ] excel (xlsx)
-    - [ ] pdf
+    - [ ] word -- with [godocx](https://github.com/gomutex/godocx)
+    - [ ] excel -- with [excelize](https://github.com/qax-os/excelize)
+    - [ ] pdf -- with [pdfcpu](https://github.com/pdfcpu/pdfcpu)
+    - [ ] image (to index EXIF's `geopoint` at some point), for geo-targetted searches
 - [ ] Implement crawling of:
     - [ ] dropbox files
     - [ ] google drive files
@@ -17,6 +18,7 @@
 - [ ] Implement a search engine
     - [ ] with a CLI interface
     - [ ] with a Web UI
+
 
 # Crawling
 
@@ -39,4 +41,12 @@ rclone sync remote: /home/julien/GoogleDrive --progress --exclude "/Eglise/**"
 
 (ça gère la conversion de google doc vers docx automatiquement)
 
+
+# Indexing
+
+[bleve](https://github.com/blevesearch/bleve)
+
+# Searching
+
+[bleve](https://github.com/blevesearch/bleve)
 

@@ -1,14 +1,18 @@
 package main
 
 import (
+	"encoding/xml"
 	"fmt"
-	"os"
 	"net/http"
+	"os"
+
+	// "path/filepath"
 	"strings"
 
 	"desrosiers.org/pse/crawler"
 
 	"github.com/blevesearch/bleve"
+	"github.com/gomutex/godocx"
 )
 
 type CrawledDocument struct {
@@ -33,10 +37,31 @@ func isBinary(path string) (bool, error) {
 func getTextContent(filePath string) string {
 	bytes, err := os.ReadFile(filePath)
 	if err != nil {
-		fmt.Printf("Error reading the file: '%s'", filePath)
+		fmt.Printf("Error reading the file: '%s' \n", filePath)
 		return ""
 	}
 	return string(bytes)
+}
+
+func getTextFromWordDoc(filePath string) string {
+	rootDoc, err := godocx.OpenDocument(filePath)
+	if err != nil {
+		fmt.Printf("Error reading the docx %s \n", err)
+	}
+	xmlBytes, err := xml.Marshal(rootDoc)
+	decoder := xml.NewDecoder(strings.NewReader(string(xmlBytes)))
+	var result strings.Builder
+	for {
+		tok, err := decoder.Token()
+		if err != nil {
+			break // io.EOF when done
+		}
+		if charData, ok := tok.(xml.CharData); ok {
+			result.Write(charData)
+		}
+
+	}
+	return result.String()
 }
 
 func main() {
@@ -66,16 +91,18 @@ func main() {
 
 	for _, path := range fs_crawler.Files {
 		binary, _ := isBinary(path)
-		// fmt.Printf("%v", binary)
-
+			
+		content := ""
 		if binary {
-			fmt.Println("binary format not handled yet...")
+			fmt.Println(path)
+			// TODO: more precise mime/ext matching for word documents:
+			content = getTextFromWordDoc(path)
+		} else {
+			content = getTextContent(path)
 		}
-		// fmt.Println(path)
-		// fmt.Println(getTextContent(path))
 		datum := &CrawledDocument{
 			ID: path,
-			Content: getTextContent(path),
+			Content: content,
 		}
 
 		index.Index(datum.ID, datum.Content)
@@ -85,7 +112,7 @@ func main() {
 	fmt.Println(count)
 
 	// search for some text
-	query := bleve.NewMatchQuery("français")
+	query := bleve.NewMatchQuery("Check")
 	search := bleve.NewSearchRequest(query)
 	searchResults, err := index.Search(search)
 	if err != nil {

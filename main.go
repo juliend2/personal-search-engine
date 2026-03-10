@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"runtime"
 
 	"desrosiers.org/pse/crawler"
 	"desrosiers.org/pse/parser"
@@ -17,8 +19,18 @@ type CrawledDocument struct {
 }
 
 func main() {
+	if len(os.Args) < 2 {
+		usage := `
+Usage: %s folder
 
-	fs_crawler := crawler.NewFSCrawler("./fixtures/filesystem")
+folder is the path from that we'll search into.
+`
+		panic(fmt.Sprintf(usage, os.Args[0]))
+	}
+
+	sourcePath := os.Args[1]
+
+	fs_crawler := crawler.NewFSCrawler(sourcePath)
 	err := fs_crawler.Crawl()
 	if err != nil {
 		fmt.Printf("%s", err)
@@ -28,14 +40,26 @@ func main() {
 	// Create or Load the index
 	index, err := bleve.Open(INDEX_FILE)
 	if err == bleve.ErrorIndexPathDoesNotExist {
-			mapping := bleve.NewIndexMapping()
-			index, err = bleve.New(INDEX_FILE, mapping)
-			if err != nil {
-					panic(err)
-			}
+		fmt.Println("Creating new index...")
+		mapping := bleve.NewIndexMapping()
+		index, err = bleve.New(INDEX_FILE, mapping)
+		if err != nil {
+			panic(err)
+		}
 	}
 
+	const BATCH_SIZE = 100
+	
+	batch := index.NewBatch()
+	batchCount := 0
+
+
 	for _, path := range fs_crawler.Files {
+		fmt.Println(path)
+		if IsSkippable(path) {
+			fmt.Printf("Skipping %s \n", path)
+			continue
+		}
 		binary, _ := IsBinary(path)
 			
 		content := ""
@@ -51,12 +75,32 @@ func main() {
 		} else {
 			content = parser.GetTextContent(path)
 		}
-		datum := &CrawledDocument{
-			ID: path,
-			Content: content,
+		if content == "" {
+			continue // don't bother persisting to index if this is empty
+		}
+		batch.Index(path, content)
+    batchCount++
+
+		if batchCount >= BATCH_SIZE {
+			if err := index.Batch(batch); err != nil {
+				fmt.Println("batch error:", err)
+			}
+			batch = index.NewBatch()  // reset
+			batchCount = 0
+			runtime.GC()
 		}
 
-		index.Index(datum.ID, datum.Content)
+		// datum := &CrawledDocument{
+		// 	ID: path,
+		// 	Content: content,
+		// }
+
+		// index.Index(datum.ID, datum.Content)
+	}
+
+	// flush remaining
+	if batchCount > 0 {
+			index.Batch(batch)
 	}
 
 	count, _ := index.DocCount()

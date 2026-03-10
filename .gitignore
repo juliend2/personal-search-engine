@@ -1,3 +1,9 @@
-/build/
+# Configurations
 .env
+
+# Index
 *.bleve/
+
+# builds
+/build/
+/main

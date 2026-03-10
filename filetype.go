@@ -22,6 +22,18 @@ func IsBinary(path string) (bool, error) {
 	return !strings.HasPrefix(contentType, "text/"), nil
 }
 
+func IsSkippable(path string) bool {
+	match, _ := regexp.MatchString("\\.mov$", path)
+	if match {
+		return true
+	}
+	match, _ = regexp.MatchString("\\.zip$", path)
+	if match {
+		return true
+	}
+	return false
+}
+
 func IsWordDoc(path string) bool {
 	match, _ := regexp.MatchString("\\.docx$", path)
 	return match

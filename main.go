@@ -9,6 +9,8 @@ import (
 	"github.com/blevesearch/bleve"
 )
 
+const INDEX_FILE = "pse.bleve"
+
 type CrawledDocument struct {
 	ID string
 	Content string
@@ -24,10 +26,10 @@ func main() {
 	}
 
 	// open a new index
-	index, err := bleve.Open("example.bleve")
+	index, err := bleve.Open(INDEX_FILE)
 	if err == bleve.ErrorIndexPathDoesNotExist {
 			mapping := bleve.NewIndexMapping()
-			index, err = bleve.New("example.bleve", mapping)
+			index, err = bleve.New(INDEX_FILE, mapping)
 			if err != nil {
 					panic(err)
 			}

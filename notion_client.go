@@ -48,7 +48,10 @@ func GetSubBlocks(blockId string) {
 	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", apiKey))
 	req.Header.Add("Content-Type", "application/json")
 
-	res, _ := http.DefaultClient.Do(req)
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	defer res.Body.Close()
 	body, _ := io.ReadAll(res.Body)
@@ -70,16 +73,19 @@ func GetNotionPage() Page {
 	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", apiKey))
 	req.Header.Add("Content-Type", "application/json")
 
-	res, _ := http.DefaultClient.Do(req)
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	defer res.Body.Close()
 	body, _ := io.ReadAll(res.Body)
 
 	var block Page
-	err := json.Unmarshal(body, &block)
+	errUnmarshal := json.Unmarshal(body, &block)
 
-	if err != nil {
-		fmt.Println(err)
+	if errUnmarshal != nil {
+		fmt.Println(errUnmarshal)
 	}
 
 	return block

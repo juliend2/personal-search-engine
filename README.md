@@ -11,14 +11,14 @@ README
     - [ ] pdf -- with [pdfcpu](https://github.com/pdfcpu/pdfcpu)
     - [ ] image (to index EXIF's `geopoint` at some point), for geo-targetted searches -- with [go-exiftool](https://github.com/barasher/go-exiftool)
 - [ ] Implement crawling of:
-    - [ ] dropbox files
-    - [ ] google drive files
-    - [ ] notion documents
+    - [>] dropbox files
+    - [>] google drive files
+    - [>] notion documents
     - [ ] (nicetohave) todoist
     - [ ] (nicetohave) google calendar
     - [ ] (nicetohave) gmail
 - [ ] Implement an indexer that:
-    - [ ] maps all the data sources (dropbox, notion, etc)
+    - [>] maps all the data sources (dropbox, notion, etc)
     - [ ] finds out the file type
     - [ ] execute the proper parsing strategy
 - [ ] Implement a search engine

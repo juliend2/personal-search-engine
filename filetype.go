@@ -27,3 +27,7 @@ func IsWordDoc(path string) bool {
 	return match
 }
 
+func IsPDF(path string) bool {
+	match, _ := regexp.MatchString("\\.pdf$", path)
+	return match
+}

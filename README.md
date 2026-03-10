@@ -5,10 +5,10 @@ README
 
 - [ ] Implement parsing for:
     - [x] txt
-    - [>] word -- with [godocx](https://github.com/gomutex/godocx)
+    - [>] word -- with [gomutex/godocx](https://github.com/gomutex/godocx)
         - [ ] Fix parsing error when using the cv.docx I have in fixtures/broken-files/
-    - [ ] excel -- with [excelize](https://github.com/qax-os/excelize)
-    - [ ] pdf -- with [pdfcpu](https://github.com/pdfcpu/pdfcpu)
+    - [ ] excel -- with [qax-os/excelize](https://github.com/qax-os/excelize)
+    - [>] pdf -- with [ledongthuc/pdf](github.com/ledongthuc/pdf)
     - [ ] image (to index EXIF's `geopoint` at some point), for geo-targetted searches -- with [go-exiftool](https://github.com/barasher/go-exiftool)
 - [ ] Implement crawling of:
     - [>] dropbox files

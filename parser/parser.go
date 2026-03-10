@@ -5,7 +5,10 @@ import (
 	"encoding/xml"
 	"fmt"
 	"strings"
+	"bytes"
+
 	"github.com/gomutex/godocx"
+	"github.com/ledongthuc/pdf"
 )
 
 func GetTextContent(filePath string) string {
@@ -38,3 +41,22 @@ func GetTextFromWordDoc(filePath string) string {
 	return result.String()
 }
 
+func GetTextFromPdf(filePath string) (string, error) {
+	pdf.DebugOn = false //true
+
+	f, r, err := pdf.Open(filePath)
+	if err != nil {
+		return "", err
+	}
+	defer f.Close()
+
+	var buf bytes.Buffer
+	b, err := r.GetPlainText()
+	if err != nil {
+		return "", err
+	}
+	buf.ReadFrom(b)
+	content := buf.String()
+
+	return content, nil
+}

@@ -25,7 +25,7 @@ func main() {
 		panic(err)
 	}
 
-	// open a new index
+	// Create or Load the index
 	index, err := bleve.Open(INDEX_FILE)
 	if err == bleve.ErrorIndexPathDoesNotExist {
 			mapping := bleve.NewIndexMapping()
@@ -40,10 +40,13 @@ func main() {
 			
 		content := ""
 		if binary {
-			if IsWordDoc(path) {
+			switch {
+			case IsPDF(path):
+				content, _ = parser.GetTextFromPdf(path)
+			case IsWordDoc(path):
 				content = parser.GetTextFromWordDoc(path)
-			} else {
-				content = "" // Just so it doesn't create an error
+			default:
+				content = ""
 			}
 		} else {
 			content = parser.GetTextContent(path)
@@ -60,7 +63,8 @@ func main() {
 	fmt.Println(count)
 
 	// search for some text
-	query := bleve.NewMatchQuery("Check")
+	// keep this only for dev's feedback loop.
+	query := bleve.NewMatchQuery("domain name")
 	search := bleve.NewSearchRequest(query)
 	searchResults, err := index.Search(search)
 	if err != nil {

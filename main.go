@@ -93,13 +93,6 @@ query is a string that you search for among those files.
 			batchCount = 0
 			runtime.GC()
 		}
-
-		// datum := &CrawledDocument{
-		// 	ID: path,
-		// 	Content: content,
-		// }
-
-		// index.Index(datum.ID, datum.Content)
 	}
 
 	// flush remaining

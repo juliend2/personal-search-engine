@@ -23,13 +23,20 @@ func IsBinary(path string) (bool, error) {
 }
 
 func IsSkippable(path string) bool {
-	match, _ := regexp.MatchString("\\.mov$", path)
-	if match {
-		return true
+	unsupportedFormats := []string{
+		"mov",
+		"m4v",
+		"webm",
+		"jpg",
+		"jpeg",
+		"zip",
+		"sqlite3",
 	}
-	match, _ = regexp.MatchString("\\.zip$", path)
-	if match {
-		return true
+	for _, fileType := range unsupportedFormats {
+		match, _ := regexp.MatchString("\\."+fileType+"$", path)
+		if match {
+			return true
+		}
 	}
 	return false
 }

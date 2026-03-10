@@ -44,7 +44,7 @@ func main() {
 			case IsPDF(path):
 				content, _ = parser.GetTextFromPdf(path)
 			case IsWordDoc(path):
-				content = parser.GetTextFromWordDoc(path)
+				content, _ = parser.GetTextFromWordDoc(path)
 			default:
 				content = ""
 			}

@@ -20,10 +20,11 @@ func GetTextContent(filePath string) string {
 	return string(bytes)
 }
 
-func GetTextFromWordDoc(filePath string) string {
+func GetTextFromWordDoc(filePath string) (string, error) {
 	rootDoc, err := godocx.OpenDocument(filePath)
 	if err != nil {
 		fmt.Printf("Error reading the docx %s \n", err)
+		return "", err
 	}
 	xmlBytes, err := xml.Marshal(rootDoc)
 	decoder := xml.NewDecoder(strings.NewReader(string(xmlBytes)))
@@ -38,7 +39,7 @@ func GetTextFromWordDoc(filePath string) string {
 		}
 
 	}
-	return result.String()
+	return result.String(), nil
 }
 
 func GetTextFromPdf(filePath string) (string, error) {

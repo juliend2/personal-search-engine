@@ -9,6 +9,7 @@ import (
 	"desrosiers.org/pse/parser"
 
 	"github.com/blevesearch/bleve"
+	"github.com/joho/godotenv"
 )
 
 const INDEX_FILE = "pse.bleve"
@@ -92,6 +93,7 @@ func FileSystemCrawl(path string) {
 }
 
 func main() {
+	godotenv.Load()
 	numberOfSupportedArguments := 2
 	if len(os.Args) < numberOfSupportedArguments {
 		usage := `
@@ -105,7 +107,11 @@ folder is the path from that we'll search into.
 	sourcePath := os.Args[1]
 
 	if sourcePath == "notion" {
-		fmt.Println("not implemented")
+		page, err := crawler.GetNotionPage()
+		if err != nil {
+			panic(err)
+		}
+		fmt.Printf("%v \n", page.GetTitle())
 		// TODO
 	} else {
 		FileSystemCrawl(sourcePath)

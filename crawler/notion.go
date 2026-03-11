@@ -1,6 +1,7 @@
 package crawler
 
 import (
+	"errors"
 	"encoding/json"
 	"net/http"
 	"io"
@@ -20,12 +21,12 @@ type Page struct {
 	Url 				string `json:url`
 	CreatedTime string `json:created_time`
 	Properties struct {
-        Title struct {
-            ID    string      `json:"id"`
-            Type  string      `json:"type"`
-            Title []TitleItem `json:"title"` // Note: this is an array
-        } `json:"title"`
-    } `json:"properties"`
+		Title struct {
+			ID    string      `json:"id"`
+			Type  string      `json:"type"`
+			Title []TitleItem `json:"title"` // Note: this is an array
+		} `json:"title"`
+	} `json:"properties"`
 }
 func (p *Page) GetTitle() string {
     items := p.Properties.Title.Title
@@ -36,14 +37,18 @@ func (p *Page) GetTitle() string {
 }
 
 
-func GetNotionPage() Page {
+func GetNotionPage() (Page, error) {
 
 	apiKey := os.Getenv("NOTION_SECRET_KEY")
 
-	url := "https://api.notion.com/v1/pages/312379235fe6803babe3f8cd2dd8cce7"
+	url := "https://api.notion.com/v1/pages/2d5379235fe6804983a4e8b552ea211c"
 
 	req, _ := http.NewRequest("GET", url, nil)
 
+	if apiKey == "" {
+		return Page{}, errors.New("API Key not provided.")
+	}
+	fmt.Printf("API KEY: %s \n", apiKey)
 	req.Header.Add("Notion-Version", API_VERSION)
 	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", apiKey))
 	req.Header.Add("Content-Type", "application/json")
@@ -63,6 +68,6 @@ func GetNotionPage() Page {
 		fmt.Println(errUnmarshal)
 	}
 
-	return block
+	return block, nil
 }
 

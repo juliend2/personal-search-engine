@@ -5,6 +5,7 @@ go 1.25.4
 require (
 	github.com/blevesearch/bleve v1.0.14
 	github.com/gomutex/godocx v0.1.5
+	github.com/joho/godotenv v1.5.1
 	github.com/ledongthuc/pdf v0.0.0-20250511090121-5959a4027728
 )
 

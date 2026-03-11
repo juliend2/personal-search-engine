@@ -1,4 +1,4 @@
-all: main run
+all: main search
 
 search:
 	go run cmd/search/cli.go crainte

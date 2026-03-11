@@ -5,25 +5,35 @@ README
 
 - [ ] Implement parsing for:
     - [x] txt
-    - [>] word -- with [gomutex/godocx](https://github.com/gomutex/godocx)
-        - [ ] Fix parsing error when using the cv.docx I have in fixtures/broken-files/
+    - [x] word -- with [gomutex/godocx](https://github.com/gomutex/godocx)
     - [ ] excel -- with [qax-os/excelize](https://github.com/qax-os/excelize)
-    - [>] pdf -- with [ledongthuc/pdf](github.com/ledongthuc/pdf)
-    - [ ] image (to index EXIF's `geopoint` at some point), for geo-targetted searches -- with [go-exiftool](https://github.com/barasher/go-exiftool)
+    - [x] pdf -- with [ledongthuc/pdf](github.com/ledongthuc/pdf)
+    - [ ] (nicetohave) image (to index EXIF's `geopoint` at some point), for geo-targetted searches -- with [go-exiftool](https://github.com/barasher/go-exiftool)
 - [ ] Implement crawling of:
-    - [>] dropbox files
-    - [>] google drive files
+    - [x] dropbox files
+    - [x] google drive files
     - [>] notion documents
     - [ ] (nicetohave) todoist
     - [ ] (nicetohave) google calendar
     - [ ] (nicetohave) gmail
 - [ ] Implement an indexer that:
     - [>] maps all the data sources (dropbox, notion, etc)
-    - [ ] finds out the file type
-    - [ ] execute the proper parsing strategy
+    - [x] finds out the file type
+    - [x] execute the proper parsing strategy
 - [ ] Implement a search engine
-    - [ ] with a CLI interface
+    - [x] with a CLI interface
     - [ ] with a Web UI
+
+# FIXME
+
+- [ ] Better handling of special cases
+    - [ ] `’` to be matched by `'` as well
+    - [ ] `d’Aquin` (with apostrophe) to be matched by `Aquin` as well (better tokenization)
+- [ ] PDF:
+    - [ ] Fix memory leak when parsing `crawling-strategies.pdf` (see fixtures/broken-files/)
+- [ ] DOCX:
+    - [ ] Fix parsing error when parsing cv.docx (see fixtures/broken-files/)
+
 
 
 # Crawling

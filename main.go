@@ -56,7 +56,7 @@ query is a string that you search for among those files.
 	batch := index.NewBatch()
 	batchCount := 0
 
-
+	// Loop into the crawled files
 	for _, path := range fs_crawler.Files {
 		fmt.Println(path)
 

@@ -1,8 +1,10 @@
-run:
-	go run .
+all: main run
 
-clean:
-	rm ./main
+search:
+	go run cmd/search/cli.go crainte
 
 main: clean
 	go build -o main main.go filetype.go notion_client.go
+
+clean:
+	rm ./main

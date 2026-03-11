@@ -19,19 +19,17 @@ type CrawledDocument struct {
 }
 
 func main() {
-	numberOfSupportedArguments := 3
+	numberOfSupportedArguments := 2
 	if len(os.Args) < numberOfSupportedArguments {
 		usage := `
 Usage: %s folder query
 
 folder is the path from that we'll search into.
-query is a string that you search for among those files.
 `
 		panic(fmt.Sprintf(usage, os.Args[0]))
 	}
 
 	sourcePath := os.Args[1]
-	searchQuery := os.Args[2]
 
 	fs_crawler := crawler.NewFSCrawler(sourcePath)
 	err := fs_crawler.Crawl()
@@ -102,16 +100,5 @@ query is a string that you search for among those files.
 
 	count, _ := index.DocCount()
 	fmt.Println(count)
-
-	// search for some text
-	// keep this only for dev's feedback loop.
-	query := bleve.NewMatchQuery(searchQuery)
-	search := bleve.NewSearchRequest(query)
-	searchResults, err := index.Search(search)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	fmt.Println(searchResults)
 }
 

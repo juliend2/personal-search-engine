@@ -7,4 +7,4 @@ main: clean
 	go build -o main main.go filetype.go notion_client.go
 
 clean:
-	rm ./main
+	rm -f ./main

@@ -7,6 +7,7 @@ README
     - [x] txt
     - [x] word -- with [gomutex/godocx](https://github.com/gomutex/godocx)
     - [ ] excel -- with [qax-os/excelize](https://github.com/qax-os/excelize)
+    - [ ] powerpoint
     - [x] pdf -- with [ledongthuc/pdf](github.com/ledongthuc/pdf)
     - [ ] (nicetohave) image (to index EXIF's `geopoint` at some point), for geo-targetted searches -- with [go-exiftool](https://github.com/barasher/go-exiftool)
 - [ ] Implement crawling of:
@@ -29,6 +30,7 @@ README
 - [ ] Better handling of special cases
     - [ ] `’` to be matched by `'` as well
     - [ ] `d’Aquin` (with apostrophe) to be matched by `Aquin` as well (better tokenization)
+    - [ ] `é` to be matched by `e` as well (and other accented characters)
 - [ ] PDF:
     - [ ] Fix memory leak when parsing `crawling-strategies.pdf` (see fixtures/broken-files/)
 - [ ] DOCX:

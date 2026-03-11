@@ -18,20 +18,8 @@ type CrawledDocument struct {
 	Content string
 }
 
-func main() {
-	numberOfSupportedArguments := 2
-	if len(os.Args) < numberOfSupportedArguments {
-		usage := `
-Usage: %s folder query
-
-folder is the path from that we'll search into.
-`
-		panic(fmt.Sprintf(usage, os.Args[0]))
-	}
-
-	sourcePath := os.Args[1]
-
-	fs_crawler := crawler.NewFSCrawler(sourcePath)
+func FileSystemCrawl(path string) {
+	fs_crawler := crawler.NewFSCrawler(path)
 	err := fs_crawler.Crawl()
 	if err != nil {
 		fmt.Printf("%s", err)
@@ -100,5 +88,27 @@ folder is the path from that we'll search into.
 
 	count, _ := index.DocCount()
 	fmt.Println(count)
+
+}
+
+func main() {
+	numberOfSupportedArguments := 2
+	if len(os.Args) < numberOfSupportedArguments {
+		usage := `
+Usage: %s folder query
+
+folder is the path from that we'll search into.
+`
+		panic(fmt.Sprintf(usage, os.Args[0]))
+	}
+
+	sourcePath := os.Args[1]
+
+	if sourcePath == "notion" {
+		fmt.Println("not implemented")
+		// TODO
+	} else {
+		FileSystemCrawl(sourcePath)
+	}
 }
 

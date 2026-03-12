@@ -108,11 +108,13 @@ folder is the path from that we'll search into.
 
 	if sourcePath == "notion" {
 		page, err := crawler.GetNotionPage()
+
 		if err != nil {
 			panic(err)
 		}
 		fmt.Printf("%v \n", page.GetTitle())
-		// TODO
+		markdown, err := crawler.GetMarkdown("2d5379235fe6804983a4e8b552ea211c")
+		fmt.Println(markdown)
 	} else {
 		FileSystemCrawl(sourcePath)
 	}

@@ -9,8 +9,6 @@ import (
 	"fmt"
 )
 
-const API_VERSION = "2025-09-03"
-
 type TitleItem struct {
     PlainText   string      `json:"plain_text"`
     Type        string      `json:"type"`
@@ -49,7 +47,7 @@ func GetNotionPage() (Page, error) {
 		return Page{}, errors.New("API Key not provided.")
 	}
 	fmt.Printf("API KEY: %s \n", apiKey)
-	req.Header.Add("Notion-Version", API_VERSION)
+	req.Header.Add("Notion-Version", "2025-09-03")
 	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", apiKey))
 	req.Header.Add("Content-Type", "application/json")
 
@@ -71,3 +69,35 @@ func GetNotionPage() (Page, error) {
 	return block, nil
 }
 
+func GetMarkdown(pageId string) (string, error) {
+	apiKey := os.Getenv("NOTION_SECRET_KEY")
+
+	url := "https://api.notion.com/v1/pages/"+pageId+"/markdown"
+
+	req, _ := http.NewRequest("GET", url, nil)
+
+	if apiKey == "" {
+		return "", errors.New("API Key not provided.")
+	}
+	fmt.Printf("API KEY: %s \n", apiKey)
+	req.Header.Add("Notion-Version", "2026-03-11")
+	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", apiKey))
+	req.Header.Add("Content-Type", "application/json")
+
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	defer res.Body.Close()
+	body, _ := io.ReadAll(res.Body)
+
+	var jsn map[string]any
+	errUnmarshal := json.Unmarshal(body, &jsn)
+
+	if errUnmarshal != nil {
+		fmt.Println(errUnmarshal)
+	}
+
+	return jsn["markdown"].(string), nil
+}

@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	"fmt"
+	"time"
 )
 
 type TitleItem struct {
@@ -184,4 +185,21 @@ func GetChildPageIds(parentPageID string) ([]string, error) {
 	}
 
 	return pageIds, nil
+}
+
+// Depth first search of Notion pages
+func NotionPageSearch(pageID *string) {
+	if pageID == nil {
+		return
+	}
+	fmt.Printf("%s \n", *pageID)
+
+	time.Sleep(400 * time.Millisecond)
+	pageIDs, err := GetChildPageIds(*pageID)
+	if err != nil {
+		panic(err)
+	}
+	for _, child := range pageIDs {
+		NotionPageSearch(&child)
+	}
 }

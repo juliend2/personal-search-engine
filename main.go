@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"runtime"
-	"time"
 
 	"desrosiers.org/pse/crawler"
 	"desrosiers.org/pse/parser"
@@ -93,22 +92,6 @@ func FileSystemCrawl(path string) {
 
 }
 
-func dfs(pageID *string) {
-	if pageID == nil {
-		return
-	}
-	fmt.Printf("%s \n", *pageID)
-
-	time.Sleep(400 * time.Millisecond)
-	pageIDs, err := crawler.GetChildPageIds(*pageID)
-	if err != nil {
-		panic(err)
-	}
-	for _, child := range pageIDs {
-		dfs(&child)
-	}
-}
-
 func main() {
 	godotenv.Load()
 	numberOfSupportedArguments := 2
@@ -137,7 +120,7 @@ folder is the path from that we'll search into.
 		// subPageIDs, err := crawler.GetChildPageIds("2ab379235fe68009b4e9e3d00579ba1c")
 		// fmt.Printf("%v\n", subPageIDs)
 		var id string = "2ab379235fe68009b4e9e3d00579ba1c"
-		dfs(&id)
+		crawler.NotionPageSearch(&id)
 	} else {
 		FileSystemCrawl(sourcePath)
 	}

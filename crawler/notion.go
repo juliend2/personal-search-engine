@@ -141,6 +141,7 @@ func GetBlockJSON(pageID string) ([]byte, error) {
 	}
 
 	// Not cached; get it:
+	time.Sleep(400 * time.Millisecond) // politeness
 	url := fmt.Sprintf("https://api.notion.com/v1/blocks/%s/children", pageID)
 	req, _ := NewNotionGetRequest(url, "2026-03-11", os.Getenv("NOTION_SECRET_KEY"))
 
@@ -188,18 +189,18 @@ func GetChildPageIds(parentPageID string) ([]string, error) {
 }
 
 // Depth first search of Notion pages
-func NotionPageSearch(pageID *string) {
+func NotionPageSearch(accumulator *[]string, pageID *string) {
 	if pageID == nil {
 		return
 	}
 	fmt.Printf("%s \n", *pageID)
+	*accumulator = append(*accumulator, *pageID)
 
-	time.Sleep(400 * time.Millisecond)
 	pageIDs, err := GetChildPageIds(*pageID)
 	if err != nil {
 		panic(err)
 	}
 	for _, child := range pageIDs {
-		NotionPageSearch(&child)
+		NotionPageSearch(accumulator, &child)
 	}
 }

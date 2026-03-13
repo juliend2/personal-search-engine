@@ -119,8 +119,10 @@ folder is the path from that we'll search into.
 
 		// subPageIDs, err := crawler.GetChildPageIds("2ab379235fe68009b4e9e3d00579ba1c")
 		// fmt.Printf("%v\n", subPageIDs)
-		var id string = "2ab379235fe68009b4e9e3d00579ba1c"
-		crawler.NotionPageSearch(&id)
+		var initialPageID string = "2ab379235fe68009b4e9e3d00579ba1c"
+		var pageIdAccumulator []string
+		crawler.NotionPageSearch(&pageIdAccumulator, &initialPageID)
+		fmt.Printf("Final list of pages: %v \n", pageIdAccumulator)
 	} else {
 		FileSystemCrawl(sourcePath)
 	}

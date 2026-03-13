@@ -36,21 +36,39 @@ func (p *Page) GetTitle() string {
     return items[0].PlainText
 }
 
+func getCachedBlock(blockID string) ([]byte, error) {
+	data, err := os.ReadFile(fmt.Sprintf(CACHE_FILE_MASK, blockID))
+	if err != nil {
+		return []byte{}, errors.New("Error while opening the file. Maybe it does not exist.")
+	}
+	fmt.Printf("getCachedBlock %s \n", blockID)
+	return data, nil
+}
+
+func cacheBlock(blockID string, data []byte) error {
+	err := os.WriteFile(fmt.Sprintf(CACHE_FILE_MASK, blockID), data, 0666)
+	return err
+}
+
+func NewNotionGetRequest(url, version, apiKey string) (*http.Request, error) {
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return req, err
+	}
+	req.Header.Add("Notion-Version", version)
+	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", apiKey))
+	req.Header.Add("Content-Type", "application/json")
+
+	return req, nil
+}
 
 func GetNotionPage() (Page, error) {
-
 	apiKey := os.Getenv("NOTION_SECRET_KEY")
-
-	url := "https://api.notion.com/v1/pages/2d5379235fe6804983a4e8b552ea211c"
-
-	req, _ := http.NewRequest("GET", url, nil)
-
 	if apiKey == "" {
 		return Page{}, errors.New("API Key not provided.")
 	}
-	req.Header.Add("Notion-Version", "2025-09-03")
-	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", apiKey))
-	req.Header.Add("Content-Type", "application/json")
+	url := "https://api.notion.com/v1/pages/2d5379235fe6804983a4e8b552ea211c"
+	req, _ := NewNotionGetRequest(url, "2025-09-03", apiKey)
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -79,15 +97,12 @@ func GetBlockMarkdown(pageID string) ([]byte, error) {
 	}
 
 	apiKey := os.Getenv("NOTION_SECRET_KEY")
-	url := "https://api.notion.com/v1/pages/"+pageID+"/markdown"
-	req, _ := http.NewRequest("GET", url, nil)
-
 	if apiKey == "" {
 		return []byte{}, errors.New("API Key not provided.")
 	}
-	req.Header.Add("Notion-Version", "2026-03-11")
-	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", apiKey))
-	req.Header.Add("Content-Type", "application/json")
+
+	url := "https://api.notion.com/v1/pages/"+pageID+"/markdown"
+	req, _ := NewNotionGetRequest(url, "2026-03-11", apiKey)
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -117,20 +132,6 @@ func GetMarkdown(pageID string) (string, error) {
 	return jsn["markdown"].(string), nil
 }
 
-func getCachedBlock(blockID string) ([]byte, error) {
-	data, err := os.ReadFile(fmt.Sprintf(CACHE_FILE_MASK, blockID))
-	if err != nil {
-		return []byte{}, errors.New("Error while opening the file. Maybe it does not exist.")
-	}
-	fmt.Printf("getCachedBlock %s \n", blockID)
-	return data, nil
-}
-
-func cacheBlock(blockID string, data []byte) error {
-	err := os.WriteFile(fmt.Sprintf(CACHE_FILE_MASK, blockID), data, 0666)
-	return err
-}
-
 func GetBlockJSON(pageID string) ([]byte, error) {
 	// Maybe it's cached?
 	cachedBytes, err := getCachedBlock(pageID)
@@ -140,11 +141,7 @@ func GetBlockJSON(pageID string) ([]byte, error) {
 
 	// Not cached; get it:
 	url := fmt.Sprintf("https://api.notion.com/v1/blocks/%s/children", pageID)
-	req, _ := http.NewRequest("GET", url, nil)
-
-	req.Header.Add("Notion-Version", "2026-03-11")
-	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", os.Getenv("NOTION_SECRET_KEY")))
-	req.Header.Add("Content-Type", "application/json")
+	req, _ := NewNotionGetRequest(url, "2026-03-11", os.Getenv("NOTION_SECRET_KEY"))
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {

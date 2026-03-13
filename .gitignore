@@ -3,6 +3,7 @@
 
 # Index
 *.bleve/
+/cache/
 
 # builds
 /build/

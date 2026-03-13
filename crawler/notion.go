@@ -63,12 +63,12 @@ func NewNotionGetRequest(url, version, apiKey string) (*http.Request, error) {
 	return req, nil
 }
 
-func GetNotionPage() (Page, error) {
+func GetNotionPage(pageID string) (Page, error) {
 	apiKey := os.Getenv("NOTION_SECRET_KEY")
 	if apiKey == "" {
 		return Page{}, errors.New("API Key not provided.")
 	}
-	url := "https://api.notion.com/v1/pages/2d5379235fe6804983a4e8b552ea211c"
+	url := "https://api.notion.com/v1/pages/"+pageID
 	req, _ := NewNotionGetRequest(url, "2025-09-03", apiKey)
 
 	res, err := http.DefaultClient.Do(req)
@@ -90,6 +90,7 @@ func GetNotionPage() (Page, error) {
 }
 
 func GetBlockMarkdown(pageID string) ([]byte, error) {
+	// TODO: make the cache transient
 	cacheKey := pageID + "-markdown"
 	data, err := getCachedBlock(cacheKey)
 	if err == nil {
@@ -97,11 +98,14 @@ func GetBlockMarkdown(pageID string) ([]byte, error) {
 		return data, nil
 	}
 
+	fmt.Printf("Going to crawl markdown for %s ...\n", pageID)
+
 	apiKey := os.Getenv("NOTION_SECRET_KEY")
 	if apiKey == "" {
 		return []byte{}, errors.New("API Key not provided.")
 	}
 
+	time.Sleep(500 * time.Millisecond)
 	url := "https://api.notion.com/v1/pages/"+pageID+"/markdown"
 	req, _ := NewNotionGetRequest(url, "2026-03-11", apiKey)
 
@@ -134,6 +138,7 @@ func GetMarkdown(pageID string) (string, error) {
 }
 
 func GetBlockJSON(pageID string) ([]byte, error) {
+	// TODO: make this cache transient
 	// Maybe it's cached?
 	cachedBytes, err := getCachedBlock(pageID)
 	if err == nil && len(cachedBytes) > 0 {

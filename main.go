@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 	"runtime"
+	"net/url"
+	"strings"
 
 	"desrosiers.org/pse/crawler"
 	"desrosiers.org/pse/parser"
@@ -107,15 +109,15 @@ folder is the path from that we'll search into.
 	sourcePath := os.Args[1]
 
 	if sourcePath == "notion" {
-		page, err := crawler.GetNotionPage()
+		page, err := crawler.GetNotionPage("2d5379235fe6804983a4e8b552ea211c")
 
 		if err != nil {
 			panic(err)
 		}
 		fmt.Printf("%v \n", page.GetTitle())
 		// GO: 2d5379235fe6804983a4e8b552ea211c
-		markdown, err := crawler.GetMarkdown("2ab379235fe68009b4e9e3d00579ba1c")
-		fmt.Println(markdown)
+		// markdown, err := crawler.GetMarkdown("2ab379235fe68009b4e9e3d00579ba1c")
+		// fmt.Println(markdown)
 
 		// subPageIDs, err := crawler.GetChildPageIds("2ab379235fe68009b4e9e3d00579ba1c")
 		// fmt.Printf("%v\n", subPageIDs)
@@ -123,6 +125,29 @@ folder is the path from that we'll search into.
 		var pageIdAccumulator []string
 		crawler.NotionPageSearch(&pageIdAccumulator, &initialPageID)
 		fmt.Printf("Final list of pages: %v \n", pageIdAccumulator)
+
+		index, err := bleve.Open(INDEX_FILE)
+		if err == bleve.ErrorIndexPathDoesNotExist {
+			fmt.Println("Creating new index...")
+			mapping := bleve.NewIndexMapping()
+			index, err = bleve.New(INDEX_FILE, mapping)
+			if err != nil {
+				panic(err)
+			}
+		}
+
+		// Index all pages 
+		for _, pageID := range pageIdAccumulator {
+			page, err := crawler.GetNotionPage(pageID)
+			if err != nil {
+				panic(err)
+			}
+			title := page.GetTitle()
+			md, _ := crawler.GetMarkdown(pageID)
+			encodedTitle := strings.ReplaceAll(url.QueryEscape(title), "+", "-")
+			encodedPageID := strings.ReplaceAll(pageID, "-", "")
+			index.Index("https://www.notion.so/julien-desrosiers/"+encodedTitle+"-"+encodedPageID, "# " + title + "\n\n" + md)
+		}
 	} else {
 		FileSystemCrawl(sourcePath)
 	}
